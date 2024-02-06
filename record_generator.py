@@ -47,8 +47,4 @@ address_book = AddressBook()
 for record in records:
     address_book.add_record(record)
 
-# Використовуємо метод iterator
-for page in address_book.iterator(page_size=5):
-    for record in page:
-        print(record)
-    print('-' * 30)  # Додатковий рядок для розділення між
+address_book.paginate(5)
