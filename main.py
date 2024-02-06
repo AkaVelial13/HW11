@@ -4,10 +4,10 @@ from datetime import datetime
 
 class Field:
     def __init__(self, value):
-        self.value = value
+        self.__value = value
 
     def __str__(self):
-        return str(self.value)
+        return str(self.__value)
 
     @staticmethod
     def validate(value):
@@ -15,12 +15,12 @@ class Field:
 
     @property
     def value(self):
-        return self._value
+        return self.__value
 
     @value.setter
     def value(self, new_value):
         self.validate(new_value)
-        self._value = new_value
+        self.__value = new_value
 
 
 class Name(Field):
@@ -61,10 +61,10 @@ class Birthday(Field):
 
 
 class Record:
-    def __init__(self, name):
+    def __init__(self, name, birthday=None):
         self.name = Name(name)
         self.phones = []
-        self.birthday = None
+        self.birthday = birthday
 
     def add_birthday(self, birthday):
         if self.birthday is not None:
