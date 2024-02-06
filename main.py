@@ -111,7 +111,7 @@ class Record:
 
         if not self.phones:
             return None
-        
+
     def __str__(self):
         phones_str = '; '.join(str(phone) for phone in self.phones)
         birthday_str = f", Birthday: {self.birthday.value}" if self.birthday else ""
@@ -132,19 +132,21 @@ class AddressBook(UserDict):
         if name in self.data:
             del self.data[name]
 
-    def iterator(self, page_size=5):
-        records = list(self.data.values())
-        total_records = len(records)
-        current_page = 0
+    def iterator(self, n=2):
+        start = 0
+        end = n
+        while start < len(self.data):
+            yield {name: self.data[name] for name in list(self.data)[start:end]}
+            start += n
+            end += n
 
-        while current_page * page_size < total_records:
-            start_index = current_page * page_size
-            end_index = min((current_page + 1) * page_size, total_records)
-
-            yield records[start_index:end_index]
-
-            current_page += 1
-            print('*' * 20)
+    def paginate(self, n):
+        page_number = 1
+        for page in self.iterator(n):
+            print(f"Page {page_number}:")
+            for name, value in page.items():
+                print(f" {value}")
+            page_number += 1
 
 
 book = AddressBook()
@@ -153,8 +155,6 @@ john_record = Record("John")
 john_record.add_phone("1234567890")
 john_record.add_phone("5555555555")
 john_record.add_birthday("03-03-1993")
-
-
 book.add_record(john_record)
 
 jane_record = Record("Jane")
@@ -162,22 +162,15 @@ jane_record.add_phone("9876543210")
 jane_record.add_birthday("05-05-2012")
 book.add_record(jane_record)
 
-for name, record in book.data.items():
-    print(record)
+jim_record = Record("Jim")
+jim_record.add_phone("1234567890")
+jim_record.add_phone("7777777777")
+jim_record.add_birthday("01-01-1991")
+book.add_record(jim_record)
 
-john = book.find("John")
-john.edit_phone("1234567890", "1112223333")
+jade_record = Record("Jade")
+jade_record.add_phone("5675675671")
+jade_record.add_birthday("08-08-2005")
+book.add_record(jade_record)
 
-print(john)
-days_left = john_record.days_to_birthday()
-print(f"Days left to John's birthday: {days_left} days")
-
-found_phone = john.find_phone("5555555555")
-print(f"{john.name.value}: {found_phone}")
-
-page_size = 1  # Встановіть бажаний розмір сторінки
-for page in book.iterator(page_size):
-    for record in page:
-        print(record)
-
-book.delete("Jane")
+book.paginate(2)
